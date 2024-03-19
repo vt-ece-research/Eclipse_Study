@@ -5,10 +5,10 @@ from skyfield.iokit import parse_tle_file
 
 x = open("sltrack_iridium_perm_small.txt", "r")
 
-
-satellites = list(parse_tle_file(x.read()))
-print(satellites)   
-
+TLEstring = x.read()
+S = TLEstring.strip().split(',')
+print(TLEstring)
+print(S)
 
 
 
