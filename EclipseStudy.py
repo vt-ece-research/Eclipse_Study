@@ -46,15 +46,20 @@ def satelliteFinderID(ID):
             return element
         
 
-def positionAtTime(number,time):
+def positionAtTime(number,time,position):
     tempsatellite = satelliteFinderID(number)
     #Gets the satellite data loaded from a tle
     satellite = EarthSatellite(tempsatellite[2], tempsatellite[3], tempsatellite[0])
 
+    difference = satellite - position
     #Gets the satellite's position
-    geocentric = satellite.at(time)
+    satFromDiff = difference.at(time)
 
-    return [geocentric.position.au[0],geocentric.position.au[1],geocentric.position.au[2]]
+    alt, az, distance = satFromDiff.altaz()
+    print('Altitude:', alt)
+    print('Azimuth:', az)
+    print('Distance: {:.1f} km'.format(distance.km))
+    return [satFromDiff.position.au[0],satFromDiff.position.au[1],satFromDiff.position.au[2]]
 
 def latandlongFunction(number):
     #Gets the current realtime timescale
@@ -72,8 +77,12 @@ def latandlongFunction(number):
 
 
 ts = load.timescale()
+planets = load('de421.bsp')  # ephemeris DE421
+sun = planets['sun']
+earth = planets['Earth']
+blacksburg = wgs84.latlon(37.2296 * N, 80.4139 * W)
 
-# use this to get time        y    m d   h m  s  ms
+# use this to get time       
 # best way I could find to generate a general time (part 1)
 # makes a generic time to be changed later
 testtime = dt.fromisoformat('2011-11-04 00:05:23.283')
@@ -86,21 +95,18 @@ realTime = testtime.replace(year = 2024, day = 27, month = 3, minute= 0, hour = 
 t = ts.from_datetime(realTime)
 
 # gets the distance vector for a satellite
-pos1 = positionAtTime('25104',t)
+pos1 = positionAtTime('25104',t,blacksburg)
 
 # I believe this gives altidute and azimuth in radians but I'm working on verifying
+# also don't know where origin is
 azpos1 = np.arccos(pos1[2]/(np.sqrt(pos1[0]**2+pos1[1]**2+pos1[2]**2)))
-altpos1 = np.arctan(pos1[1]/pos1[0])
+altpos1 = np.arctan(-pos1[1]/pos1[0])
 
 print(azpos1*(180/np.pi))
 print(altpos1*(180/np.pi))
-print("bruh")
 
-planets = load('de421.bsp')  # ephemeris DE421
-sun = planets['sun']
-earth = planets['Earth']
-blacksburg = earth + wgs84.latlon(37.2296 * N, 80.4139 * W)
-astrometric = blacksburg.at(t).observe(sun)
+goeblacksburg = earth+ wgs84.latlon(37.2296 * N, 80.4139 * W)
+astrometric = goeblacksburg.at(t).observe(sun)
 alt, az, d = astrometric.apparent().altaz()
 print(alt)
 print(az)
