@@ -47,22 +47,14 @@ def satelliteFinderID(ID):
         
 
 def latandlongAtTime(number,time):
-    # ts = load.timescale()
     tempsatellite = satelliteFinderID(number)
     #Gets the satellite data loaded from a tle
     satellite = EarthSatellite(tempsatellite[2], tempsatellite[3], tempsatellite[0])
 
-    #Gets the current realtime timescale
-    # t = ts.from_datetime(time)
     #Gets the satellite's position
     geocentric = satellite.at(time)
-    #finds the latitude and longitude of the satellite
-    alt, az = wgs84.latlon_of(geocentric)
 
-    #prints all the data
-    print('Name:', tempsatellite[0])
-    print('azimuth:', az)
-    print('altitude:', alt)
+    
     return [geocentric.position.au[0],geocentric.position.au[1],geocentric.position.au[2]]
 
 def latandlongFunction(number):
