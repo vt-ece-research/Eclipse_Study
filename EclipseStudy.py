@@ -1,8 +1,10 @@
 import skyfield
-from skyfield.api import load, wgs84, EarthSatellite
+from skyfield.api import load, wgs84, EarthSatellite, N, W,utc
 import io
 from skyfield.iokit import parse_tle_file
-import datetime as dt
+# import datetime as dt
+from datetime import datetime as dt
+import numpy as np
 
 def satelliteParser():
     #files and opens the file
@@ -55,12 +57,13 @@ def latandlongAtTime(number,time):
     #Gets the satellite's position
     geocentric = satellite.at(time)
     #finds the latitude and longitude of the satellite
-    lat, lon = wgs84.latlon_of(geocentric)
+    alt, az = wgs84.latlon_of(geocentric)
 
     #prints all the data
     print('Name:', tempsatellite[0])
-    print('Latitude:', lat)
-    print('Longitude:', lon)
+    print('azimuth:', az)
+    print('altitude:', alt)
+    return [geocentric.position.au[0],geocentric.position.au[1],geocentric.position.au[2]]
 
 def latandlongFunction(number):
     ts = load.timescale()
@@ -73,27 +76,54 @@ def latandlongFunction(number):
     #Gets the satellite's position
     geocentric = satellite.at(t)
     #finds the latitude and longitude of the satellite
-    lat, lon = wgs84.latlon_of(geocentric)
+    alt, az = wgs84.latlon_of(geocentric)
 
     #prints all the data
     print('Name:', tempsatellite[0])
-    print('Latitude:', lat)
-    print('Longitude:', lon)
+    print('azimuth:', az)
+    print('altitude:', alt)
+    return [geocentric.position.au[0],geocentric.position.au[1],geocentric.position.au[2]]
 
 
 
 ts = load.timescale()
 t1 = ts.now()
-testtime = dt.datetime.now(dt.timezone.utc) 
-t = ts.from_datetime(testtime) +1
-latandlongAtTime('25104',t1)
-
-latandlongAtTime('25104',t)
-latandlongFunction('25104')
 
 
 
+# use this to get time        y    m d   h m  s  ms(not shown)
+testtime = dt.fromisoformat('2011-11-04 00:05:23.283')
+testtime= testtime.replace(tzinfo=utc)      # to fix an existing datetime
+testtime = testtime.replace(year = 2024, day = 27, month = 3, minute= 0, hour = 9, second= 0, microsecond=0)
+# testtime = dt.datetime.now(dt.timezone.utc) 
+t = ts.from_datetime(testtime)
+pos1 = latandlongAtTime('25104',t)
 
+# latandlongAtTime('25104',t)
+# pos2 = latandlongFunction('25104')
+
+azpos1 = np.arccos(pos1[2]/(np.sqrt(pos1[0]**2+pos1[1]**2+pos1[2]**2)))
+altpos1 = np.arctan(pos1[1]/pos1[0])
+
+print(azpos1*(180/np.pi))
+print(altpos1*(180/np.pi))
+print("bruh")
+
+planets = load('de421.bsp')  # ephemeris DE421
+earth = planets['Earth']
+sun = planets['sun']
+bluffton = wgs84.latlon(+40.8939, -83.8917)
+astrometric = (earth + bluffton).at(t).observe(sun)
+position = astrometric.apparent()
+print("deez")
+# planets = load('de421.bsp')  # ephemeris DE421
+# sun = planets['sun']
+# earth = planets['Earth']
+# blacksburg = earth + wgs84.latlon(37.2296 * N, 80.4139 * W)
+# astrometric = blacksburg.at(t).observe(sun)
+# alt, az, d = astrometric.apparent().altaz()
+# print(alt)
+# print(az)
 
 
 # # Load the JPL ephemeris DE421 (covers 1900-2050).
