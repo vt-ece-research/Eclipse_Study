@@ -56,10 +56,10 @@ def positionAtTime(number,time,position):
     satFromDiff = difference.at(time)
 
     alt, az, distance = satFromDiff.altaz()
-    print('Altitude:', alt)
-    print('Azimuth:', az)
-    print('Distance: {:.1f} km'.format(distance.km))
-    return [satFromDiff.position.au[0],satFromDiff.position.au[1],satFromDiff.position.au[2]]
+    print('Altitude:', alt.degrees)
+    print('Azimuth:', az.degrees)
+    # print('Distance: {:.1f} km'.format(distance.km))
+    return [alt.degrees, az.degrees]
 
 def latandlongFunction(number):
     #Gets the current realtime timescale
@@ -89,7 +89,7 @@ testtime = dt.fromisoformat('2011-11-04 00:05:23.283')
 testtime= testtime.replace(tzinfo=utc)      # to fix an existing datetime
 
 # (part 2) edites the generic time with int values
-realTime = testtime.replace(year = 2024, day = 27, month = 3, minute= 0, hour = 9, second= 0, microsecond=0)
+realTime = testtime.replace(year = 2024, day = 30, month = 3, minute= 50, hour = 19, second= 0, microsecond=0)
 # Reason 1 why skyfield is annoying: it needs its own datatype for time calculations 
 # but that datatype can only be generated with datetime classes 
 t = ts.from_datetime(realTime)
@@ -97,19 +97,14 @@ t = ts.from_datetime(realTime)
 # gets the distance vector for a satellite
 pos1 = positionAtTime('25104',t,blacksburg)
 
-# I believe this gives altidute and azimuth in radians but I'm working on verifying
-# also don't know where origin is
-azpos1 = np.arccos(pos1[2]/(np.sqrt(pos1[0]**2+pos1[1]**2+pos1[2]**2)))
-altpos1 = np.arctan(-pos1[1]/pos1[0])
-
-print(azpos1*(180/np.pi))
-print(altpos1*(180/np.pi))
 
 goeblacksburg = earth+ wgs84.latlon(37.2296 * N, 80.4139 * W)
 astrometric = goeblacksburg.at(t).observe(sun)
 alt, az, d = astrometric.apparent().altaz()
-print(alt)
-print(az)
+
+print(alt.degrees)
+print(az.degrees)
+
 
 
 # # Load the JPL ephemeris DE421 (covers 1900-2050).
