@@ -7,6 +7,11 @@ from datetime import datetime as dt
 import numpy as np
 from matplotlib import pyplot as plt
 
+SatelliteID = '41866'
+month = 3
+day = 31
+
+
 def satelliteParser():
     #files and opens the file
     with open('sltrack_iridium_perm_small.txt', 'r') as file:
@@ -92,13 +97,13 @@ out = [0]*1440
 for x in range(0,24):
     # (part 2) edites the generic time with int values
     for y in range(0,60):
-        realTime = testtime.replace(year = 2024, day = 30, month = 3, minute= y, hour = x, second= 0, microsecond=0)
+        realTime = testtime.replace(year = 2024, day = day, month = month, minute= y, hour = x, second= 0, microsecond=0)
         # Reason 1 why skyfield is annoying: it needs its own datatype for time calculations 
         # but that datatype can only be generated with datetime classes 
         t = ts.from_datetime(realTime)
 
         # gets the distance vector for a satellite
-        postemp = positionAtTime('41866',t,blacksburg)
+        postemp = positionAtTime(SatelliteID,t,blacksburg)
         pos1 = [np.sin(np.pi/2-postemp[0])*np.cos(postemp[1]),np.sin(np.pi/2-postemp[0])*np.sin(postemp[1]),np.cos(np.pi/2-postemp[0])]
         # print(pos1)
 
@@ -115,7 +120,16 @@ for x in range(0,24):
 
 # print(out)
 figure, axes = plt.subplots()
+monthstr = str(month)
+daystr = str(day)
+a = templist[0]
+b = a[0]
 
+b= b.replace("0", " ")
+b= b.strip()
+plt.title("distance " +b+ " from sun on " + monthstr + '/' + daystr)
+plt.xlabel("minutes in a day")
+plt.ylabel("distance in unit sphere")
 x = np.arange(1440)
 plt.plot(x,out,'o',color = 'blue')
 
