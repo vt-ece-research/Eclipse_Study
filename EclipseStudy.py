@@ -88,8 +88,8 @@ blacksburg = wgs84.latlon(37.2296 * N, 80.4139 * W)
 # makes a generic time to be changed later
 testtime = dt.fromisoformat('2011-11-04 00:05:23.283')
 testtime= testtime.replace(tzinfo=utc)      # to fix an existing datetime
-out = [0]*1380
-for x in range(0,23):
+out = [0]*1440
+for x in range(0,24):
     # (part 2) edites the generic time with int values
     for y in range(0,60):
         realTime = testtime.replace(year = 2024, day = 30, month = 3, minute= y, hour = x, second= 0, microsecond=0)
@@ -116,7 +116,7 @@ for x in range(0,23):
 # print(out)
 figure, axes = plt.subplots()
 
-x = np.arange(1380)
+x = np.arange(1440)
 plt.plot(x,out,'o',color = 'blue')
 
 plt.show()
