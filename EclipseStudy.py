@@ -2,14 +2,13 @@ import skyfield
 from skyfield.api import load, wgs84, EarthSatellite, N, W,utc
 import io
 from skyfield.iokit import parse_tle_file
-# import datetime as dt
 from datetime import datetime as dt
 import numpy as np
 from matplotlib import pyplot as plt
 
 SatelliteID = '41866'
-month = 3
-day = 31
+month = 4
+day = 3
 
 
 def satelliteParser():
@@ -106,7 +105,7 @@ for x in range(0,24):
         postemp = positionAtTime(SatelliteID,t,blacksburg)
         pos1 = [np.sin(np.pi/2-postemp[0])*np.cos(postemp[1]),np.sin(np.pi/2-postemp[0])*np.sin(postemp[1]),np.cos(np.pi/2-postemp[0])]
         # print(pos1)
-
+        
 
         goeblacksburg = earth+ wgs84.latlon(37.2296 * N, 80.4139 * W)
         astrometric = goeblacksburg.at(t).observe(sun)
@@ -115,7 +114,12 @@ for x in range(0,24):
         # print(alt.degrees)
         # print(az.degrees)
         # print(pos2)
-        out[x*60+y] = np.sqrt((pos1[0]-pos2[0])**2+(pos1[1]-pos2[1])**2+(pos1[2]-pos2[2])**2)
+        # out[x*60+y] = np.sqrt((pos1[0]-pos2[0])**2+(pos1[1]-pos2[1])**2+(pos1[2]-pos2[2])**2)
+
+        deltaA = (postemp[1]-az.radians)*np.cos(postemp[0])
+        deltaB = postemp[1]-alt.radians
+        # out[x*60+y] = np.sqrt(deltaA**2 + deltaB**2)
+        out[x*60+y] = (180/np.pi)*(np.arccos(np.sin(alt.radians)*np.sin(postemp[1])+np.cos(alt.radians)*np.cos(postemp[1])*np.cos(az.radians-postemp[0])))
 
 
 # print(out)
@@ -129,8 +133,8 @@ b= b.replace("0", " ")
 b= b.strip()
 plt.title("distance " +b+ " from sun on " + monthstr + '/' + daystr)
 plt.xlabel("minutes in a day")
-plt.ylabel("distance in unit sphere")
+plt.ylabel("angular separation (deg)")
 x = np.arange(1440)
 plt.plot(x,out,'o',color = 'blue')
-
+plt.ylim(0,180)
 plt.show()
