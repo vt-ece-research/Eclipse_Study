@@ -6,7 +6,6 @@ from datetime import datetime as dt
 import numpy as np
 from matplotlib import pyplot as plt
 
-SatelliteID = '41866'
 month = 4
 day = 3
 
@@ -43,6 +42,9 @@ def satelliteParser():
 
     return satelliteList
 templist = satelliteParser()
+temp = templist[0]
+SatelliteID = temp[1]
+
 
 
 def satelliteFinderID(ID):
@@ -93,34 +95,35 @@ blacksburg = wgs84.latlon(37.2296 * N, 80.4139 * W)
 testtime = dt.fromisoformat('2011-11-04 00:05:23.283')
 testtime= testtime.replace(tzinfo=utc)      # to fix an existing datetime
 out = [0]*1440
-for x in range(0,24):
-    # (part 2) edites the generic time with int values
-    for y in range(0,60):
-        realTime = testtime.replace(year = 2024, day = day, month = month, minute= y, hour = x, second= 0, microsecond=0)
-        # Reason 1 why skyfield is annoying: it needs its own datatype for time calculations 
-        # but that datatype can only be generated with datetime classes 
-        t = ts.from_datetime(realTime)
+# for x in range(0,24):
+#     # (part 2) edites the generic time with int values
+#     for y in range(0,60):
+#         realTime = testtime.replace(year = 2024, day = day, month = month, minute= y, hour = x, second= 0, microsecond=0)
 
-        # gets the distance vector for a satellite
-        postemp = positionAtTime(SatelliteID,t,blacksburg)
-        pos1 = [np.sin(np.pi/2-postemp[0])*np.cos(postemp[1]),np.sin(np.pi/2-postemp[0])*np.sin(postemp[1]),np.cos(np.pi/2-postemp[0])]
-        # print(pos1)
-        
+#         t = ts.from_datetime(realTime)
 
-        goeblacksburg = earth+ wgs84.latlon(37.2296 * N, 80.4139 * W)
-        astrometric = goeblacksburg.at(t).observe(sun)
-        alt, az, d = astrometric.apparent().altaz()
-        pos2 = [np.sin(np.pi/2-alt.radians)*np.cos(az.radians),np.sin(np.pi/2-alt.radians)*np.sin(az.radians),np.cos(np.pi/2-alt.radians)]
-        # print(alt.degrees)
-        # print(az.degrees)
-        # print(pos2)
-        # out[x*60+y] = np.sqrt((pos1[0]-pos2[0])**2+(pos1[1]-pos2[1])**2+(pos1[2]-pos2[2])**2)
+#         # gets the distance vector for a satellite
+#         postemp = positionAtTime(SatelliteID,t,blacksburg)
+#         pos1 = [np.sin(np.pi/2-postemp[0])*np.cos(postemp[1]),np.sin(np.pi/2-postemp[0])*np.sin(postemp[1]),np.cos(np.pi/2-postemp[0])]        
 
-        deltaA = (postemp[1]-az.radians)*np.cos(postemp[0])
-        deltaB = postemp[1]-alt.radians
-        # out[x*60+y] = np.sqrt(deltaA**2 + deltaB**2)
-        out[x*60+y] = (180/np.pi)*(np.arccos(np.sin(alt.radians)*np.sin(postemp[1])+np.cos(alt.radians)*np.cos(postemp[1])*np.cos(az.radians-postemp[0])))
+#         goeblacksburg = earth+ wgs84.latlon(37.2296 * N, 80.4139 * W)
+#         astrometric = goeblacksburg.at(t).observe(sun)
+#         alt, az, d = astrometric.apparent().altaz()
+#         pos2 = [np.sin(np.pi/2-alt.radians)*np.cos(az.radians),np.sin(np.pi/2-alt.radians)*np.sin(az.radians),np.cos(np.pi/2-alt.radians)]
+  
 
+#         deltaA = (postemp[1]-az.radians)*np.cos(postemp[0])
+#         deltaB = postemp[1]-alt.radians
+#         out[x*60+y] = (180/np.pi)*(np.arccos(np.sin(alt.radians)*np.sin(postemp[1])+np.cos(alt.radians)*np.cos(postemp[1])*np.cos(az.radians-postemp[0])))
+
+
+realTime = testtime.replace(year = 2024, day = 6, month = 4, minute= 0, hour = 16, second= 0, microsecond=0)
+t = ts.from_datetime(realTime)
+postemp = positionAtTime(SatelliteID,t,blacksburg)
+
+goeblacksburg = earth+ wgs84.latlon(37.2296 * N, 80.4139 * W)
+astrometric = goeblacksburg.at(t).observe(sun)
+alt, az, d = astrometric.apparent().altaz()
 
 # print(out)
 figure, axes = plt.subplots()
