@@ -7,13 +7,13 @@ To make this study more useful to the MOSAIC team as a whole the working part of
 
 ## Library Dependencies
 If one wishes just to copy the function generateDistance() one needs the python libraries outlined below. One is able to copy these dependcies as written in this readme for ease of use. 
-
+```
   from skyfield.api import load, wgs84, EarthSatellite, N, W,utc
   from skyfield.iokit import parse_tle_file
   from datetime import datetime as dt
   import numpy as np
   from matplotlib import pyplot as plt
-
+```
 ## Function Dependencies
 If one wishes just to copy the function generateDistance() one needs the functions from other parts of the MOSAIC organization outlined below. These functions also appear in the EclipseStudy.py program. Please see the section on using this program/function for more details on how to copy these functions into your code. 
 
