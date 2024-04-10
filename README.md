@@ -23,13 +23,12 @@ If one wishes just to copy the function generateDistance() one needs the functio
 
 ## Function as written
 For ease of use I have copied the generateDistance() function below for quick analysis by interested parties.
-
+'''
 def generateDistance(day, month, SatelliteID):
     testtime = dt.fromisoformat('2011-11-04 00:05:23.283')
     testtime= testtime.replace(tzinfo=utc)      # to fix an existing datetime   
     out = [0]*1440
     for x in range(0,24):
-    # (part 2) edites the generic time with int values
         for y in range(0,60):
             realTime = testtime.replace(year = 2024, day = day, month = month, minute= y, hour = x, second= 0, microsecond=0)
 
@@ -49,6 +48,6 @@ def generateDistance(day, month, SatelliteID):
             deltaB = postemp[1]-alt.radians
             out[x*60+y] = (180/np.pi)*(np.arccos(np.sin(alt.radians)*np.sin(postemp[1])+np.cos(alt.radians)*np.cos(postemp[1])*np.cos(az.radians-postemp[0])))
     return out
-
+'''
 
   
