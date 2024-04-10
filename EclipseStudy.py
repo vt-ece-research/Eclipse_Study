@@ -83,18 +83,41 @@ def latandlongFunction(number):
     return [geocentric.position.au[0],geocentric.position.au[1],geocentric.position.au[2]]
 
 
+def generateDistance(day, month, SatelliteID):
+    testtime = dt.fromisoformat('2011-11-04 00:05:23.283')
+    testtime= testtime.replace(tzinfo=utc)      # to fix an existing datetime   
+    out = [0]*1440
+    for x in range(0,24):
+    # (part 2) edites the generic time with int values
+        for y in range(0,60):
+            realTime = testtime.replace(year = 2024, day = day, month = month, minute= y, hour = x, second= 0, microsecond=0)
+
+            t = ts.from_datetime(realTime)
+
+            # gets the distance vector for a satellite
+            postemp = positionAtTime(SatelliteID,t,blacksburg)
+            pos1 = [np.sin(np.pi/2-postemp[0])*np.cos(postemp[1]),np.sin(np.pi/2-postemp[0])*np.sin(postemp[1]),np.cos(np.pi/2-postemp[0])]        
+
+            goeblacksburg = earth+ wgs84.latlon(37.2296 * N, 80.4139 * W)
+            astrometric = goeblacksburg.at(t).observe(sun)
+            alt, az, d = astrometric.apparent().altaz()
+            pos2 = [np.sin(np.pi/2-alt.radians)*np.cos(az.radians),np.sin(np.pi/2-alt.radians)*np.sin(az.radians),np.cos(np.pi/2-alt.radians)]
+    
+
+            deltaA = (postemp[1]-az.radians)*np.cos(postemp[0])
+            deltaB = postemp[1]-alt.radians
+            out[x*60+y] = (180/np.pi)*(np.arccos(np.sin(alt.radians)*np.sin(postemp[1])+np.cos(alt.radians)*np.cos(postemp[1])*np.cos(az.radians-postemp[0])))
+    return out
+
 ts = load.timescale()
 planets = load('de421.bsp')  # ephemeris DE421
 sun = planets['sun']
 earth = planets['Earth']
 blacksburg = wgs84.latlon(37.2296 * N, 80.4139 * W)
 
-# use this to get time       
-# best way I could find to generate a general time (part 1)
-# makes a generic time to be changed later
-testtime = dt.fromisoformat('2011-11-04 00:05:23.283')
-testtime= testtime.replace(tzinfo=utc)      # to fix an existing datetime
-out = [0]*1440
+out = generateDistance(10,4,SatelliteID)
+
+# out = [0]*1440
 # for x in range(0,24):
 #     # (part 2) edites the generic time with int values
 #     for y in range(0,60):
@@ -116,14 +139,6 @@ out = [0]*1440
 #         deltaB = postemp[1]-alt.radians
 #         out[x*60+y] = (180/np.pi)*(np.arccos(np.sin(alt.radians)*np.sin(postemp[1])+np.cos(alt.radians)*np.cos(postemp[1])*np.cos(az.radians-postemp[0])))
 
-
-realTime = testtime.replace(year = 2024, day = 6, month = 4, minute= 0, hour = 16, second= 0, microsecond=0)
-t = ts.from_datetime(realTime)
-postemp = positionAtTime(SatelliteID,t,blacksburg)
-
-goeblacksburg = earth+ wgs84.latlon(37.2296 * N, 80.4139 * W)
-astrometric = goeblacksburg.at(t).observe(sun)
-alt, az, d = astrometric.apparent().altaz()
 
 # print(out)
 figure, axes = plt.subplots()
