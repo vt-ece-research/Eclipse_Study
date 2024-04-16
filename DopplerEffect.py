@@ -99,13 +99,16 @@ def dopplerEffect(number,time,position,fInput):
 
     return fRecieved
 
+# generate a specific time in UTC
 ts = load.timescale()
 testtime = dt.fromisoformat('2011-11-04 00:05:23.283')
 testtime= testtime.replace(tzinfo=utc)      # to fix an existing datetime   
 intermediate = testtime.replace(year = 2024, day = 16, month = 4, minute= 0, hour = 5, second= 0, microsecond=0)
 thisMorning = ts.from_datetime(intermediate)
 
+# generate a specific location
 blacksburg = wgs84.latlon(37.2296 * N, 80.4139 * W)
+
 x = dopplerEffect('43927',thisMorning,blacksburg,1610*10**6)
 print(x)
 
