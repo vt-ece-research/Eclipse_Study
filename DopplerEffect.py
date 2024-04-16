@@ -1,8 +1,8 @@
 from skyfield.api import load, wgs84, EarthSatellite, N, W,utc
 from skyfield.iokit import parse_tle_file
 from datetime import datetime as dt
-import numpy as np
-from matplotlib import pyplot as plt
+# import numpy as np
+# from matplotlib import pyplot as plt
 
 def satelliteParser():
     #files and opens the file
@@ -63,32 +63,6 @@ def velocityAtTime(number,time,position):
     vel = rates[5]
     return vel.m_per_s
 
-def positionAtTime(number,time,position):
-    tempsatellite = satelliteFinderID(number)
-    #Gets the satellite data loaded from a tle
-    satellite = EarthSatellite(tempsatellite[2], tempsatellite[3], tempsatellite[0])
-
-    difference = satellite - position
-    #Gets the satellite's position
-    satFromDiff = difference.at(time)
-
-    alt, az, distance = satFromDiff.altaz()
-
-    return [alt.degrees, az.degrees]
-
-def latandlongFunction(number):
-    #Gets the current realtime timescale
-    ts = load.timescale()
-    t = ts.now()
-    tempsatellite = satelliteFinderID(number)
-
-    #Gets the satellite data loaded from a tle
-    satellite = EarthSatellite(tempsatellite[2], tempsatellite[3], tempsatellite[0])
-
-    #Gets the satellite's position
-    geocentric = satellite.at(t)
-
-    return [geocentric.position.au[0],geocentric.position.au[1],geocentric.position.au[2]]
 
 def dopplerEffect(number,time,position,fInput):
     x = velocityAtTime(number,time,position)
