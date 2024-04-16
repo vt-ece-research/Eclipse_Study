@@ -39,6 +39,9 @@ def satelliteParser():
             satelliteList.append(singleSatellite)
 
     return satelliteList
+
+# this code is vital to the proper functioning of the function always run this between
+# satelliteParser() and satelliteFinderID 
 templist = satelliteParser()
 temp = templist[0]
 SatelliteID = temp[1]

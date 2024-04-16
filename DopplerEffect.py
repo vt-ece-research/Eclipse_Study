@@ -50,6 +50,19 @@ def satelliteFinderID(ID):
             return element
         
 
+def velocityAtTime(number,time,position):
+    tempsatellite = satelliteFinderID(number)
+    #Gets the satellite data loaded from a tle
+    satellite = EarthSatellite(tempsatellite[2], tempsatellite[3], tempsatellite[0])
+
+    difference = satellite - position
+    #Gets the satellite's position
+    satFromDiff = difference.at(time)
+
+    rates = satFromDiff.frame_latlon_and_rates(position)
+    vel = rates[5]
+    return vel.m_per_s
+
 def positionAtTime(number,time,position):
     tempsatellite = satelliteFinderID(number)
     #Gets the satellite data loaded from a tle
@@ -61,7 +74,7 @@ def positionAtTime(number,time,position):
 
     alt, az, distance = satFromDiff.altaz()
 
-    return [alt.radians, az.radians]
+    return [alt.degrees, az.degrees]
 
 def latandlongFunction(number):
     #Gets the current realtime timescale
@@ -76,3 +89,24 @@ def latandlongFunction(number):
     geocentric = satellite.at(t)
 
     return [geocentric.position.au[0],geocentric.position.au[1],geocentric.position.au[2]]
+
+
+ts = load.timescale()
+testtime = dt.fromisoformat('2011-11-04 00:05:23.283')
+testtime= testtime.replace(tzinfo=utc)      # to fix an existing datetime   
+intermediate = testtime.replace(year = 2024, day = 16, month = 4, minute= 0, hour = 5, second= 0, microsecond=0)
+thisMorning = ts.from_datetime(intermediate)
+
+blacksburg = wgs84.latlon(37.2296 * N, 80.4139 * W)
+
+x = velocityAtTime('43927',thisMorning,blacksburg)
+
+fInput = 1610*10**6        # frequncy of ISS
+
+c = 3*10**8
+
+fRecieved = (c/(c+x))*fInput
+
+print(x)
+print(fRecieved)
+
