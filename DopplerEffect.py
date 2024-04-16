@@ -1,8 +1,7 @@
 from skyfield.api import load, wgs84, EarthSatellite, N, W,utc
 from skyfield.iokit import parse_tle_file
 from datetime import datetime as dt
-# import numpy as np
-# from matplotlib import pyplot as plt
+
 
 def satelliteParser():
     #files and opens the file
