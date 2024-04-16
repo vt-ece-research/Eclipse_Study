@@ -90,6 +90,14 @@ def latandlongFunction(number):
 
     return [geocentric.position.au[0],geocentric.position.au[1],geocentric.position.au[2]]
 
+def dopplerEffect(number,time,position,fInput):
+    x = velocityAtTime(number,time,position)
+
+    c = 3*10**8
+
+    fRecieved = (c/(c+x))*fInput
+
+    return fRecieved
 
 ts = load.timescale()
 testtime = dt.fromisoformat('2011-11-04 00:05:23.283')
@@ -98,15 +106,7 @@ intermediate = testtime.replace(year = 2024, day = 16, month = 4, minute= 0, hou
 thisMorning = ts.from_datetime(intermediate)
 
 blacksburg = wgs84.latlon(37.2296 * N, 80.4139 * W)
-
-x = velocityAtTime('43927',thisMorning,blacksburg)
-
-fInput = 1610*10**6        # frequncy of ISS
-
-c = 3*10**8
-
-fRecieved = (c/(c+x))*fInput
-
+x = dopplerEffect('43927',thisMorning,blacksburg,1610*10**6)
 print(x)
-print(fRecieved)
+
 
